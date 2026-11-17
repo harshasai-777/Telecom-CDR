@@ -100,7 +100,7 @@ def main():
     # ── Optional benchmark ───────────────────────────────────────────────────
     if not args.skip_benchmark and not args.file:
         _banner("Bonus — Performance Benchmark (small + medium)")
-        from benchmark import run_benchmark
+        from benchmark_runner import run_benchmark
         run_benchmark(["small"] if args.size == "small" else ["small", "medium"])
 
     # ── Summary ──────────────────────────────────────────────────────────────

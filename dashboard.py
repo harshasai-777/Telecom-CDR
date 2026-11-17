@@ -446,16 +446,26 @@ if active_custom_path is None or not os.path.exists(active_custom_path):
             st.rerun()
 
     with col2:
-        st.markdown("#### ℹ️ Supported CSV Formats")
+        st.markdown("#### 🚀 Option 2: Instant Demo Mode")
         st.markdown("""
-        <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px; padding:1rem; font-size:0.85rem; color:#334155;">
-            <b>Any telecom CDR CSV is accepted:</b><br>
-            • Kaggle churn / call details datasets<br>
-            • Operator CDR exports (voice, SMS, data)<br>
-            • Account-level billing summaries<br><br>
-            <b>Auto-detected columns:</b> phone number, duration, charges, call type, churn/fraud label
+        <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:10px; padding:0.9rem; font-size:0.85rem; color:#166534; margin-bottom:0.8rem;">
+            Don't have a CDR CSV on hand right now? Click below to generate a <b>1,000-call synthetic telecom dataset</b> and test the live intelligence platform immediately!
         </div>
         """, unsafe_allow_html=True)
+        if st.button("⚡ Launch Demo with Sample Dataset", use_container_width=True, type="primary"):
+            from data_generator import generate_cdr
+            demo_df = generate_cdr(1000)
+            try:
+                os.makedirs(DATA_DIR, exist_ok=True)
+                demo_path = os.path.join(DATA_DIR, "demo_cdr.csv")
+            except Exception:
+                demo_path = os.path.join(tempfile.gettempdir(), "demo_cdr.csv")
+            demo_df.to_csv(demo_path, index=False)
+            st.session_state.active_csv_path = demo_path
+            st.session_state.active_file_name = "demo_cdr.csv (Live Simulation)"
+            st.session_state.file_fingerprint = f"demo_1000_{len(demo_df)}"
+            st.success("Sample dataset generated! Loading analytics...")
+            st.rerun()
 
         if has_existing:
             st.markdown("---")
@@ -471,23 +481,25 @@ if active_custom_path is None or not os.path.exists(active_custom_path):
         <b>Accepted Formats & Schema Support:</b><br>
         • Supports any CDR or Customer Call Details CSV (Kaggle datasets, telecom operator logs, network dumps).<br>
         • Automatically maps caller phone numbers, call durations/minutes, call charges, and churn/fraud indicators.<br>
-        • <b>Zero Hardcoded Data:</b> The platform will strictly wait for your CSV before running any pipeline.
+        • Ingests standard telecom schema (MSISDN, timestamp, call type, cell towers, billing charges).
     </div>
     """, unsafe_allow_html=True)
 
-    # Strictly halt execution here so no hardcoded or mock data is ever loaded!
+    # Strictly halt execution here so no data is processed before user chooses
     st.stop()
 
 # ── Execute Full Pipeline on User CSV ──────────────────────────────────────────
 # Cloud safety: cap dataset to 50 000 rows to avoid CPU throttling on free tier
 _MAX_ROWS_CLOUD = 50_000
 
-def _maybe_downsample(path: str, max_rows: int = _MAX_ROWS_CLOUD) -> str:
-    """If CSV has more than max_rows, sample it and write a trimmed version."""
+def _maybe_downsample(path: str, max_rows: int = _MAX_ROWS_CLOUD):
+    if not path or not os.path.exists(path):
+        return path, False
     try:
-        df = pd.read_csv(path, nrows=max_rows + 1)
-        if len(df) > max_rows:
-            df = df.sample(n=max_rows, random_state=42)
+        with open(path, "rb") as f:
+            total_lines = sum(1 for _ in f)
+        if total_lines > max_rows:
+            df = pd.read_csv(path, nrows=max_rows)
             sampled_path = path.replace(".csv", "_sampled.csv")
             df.to_csv(sampled_path, index=False)
             return sampled_path, True
