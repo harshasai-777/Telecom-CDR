@@ -1,0 +1,11 @@
+pandas>=2.0,<3.0
+numpy>=1.24,<2.0
+dask[dataframe]>=2023.9
+xgboost>=2.0
+scikit-learn>=1.3
+streamlit>=1.28
+plotly>=5.17
+matplotlib>=3.7
+seaborn>=0.12
+pyarrow>=13.0
+faker>=19.0
