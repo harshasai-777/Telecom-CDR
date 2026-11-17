@@ -321,18 +321,12 @@ def load_and_process_pipeline(custom_path: str, file_fingerprint: str = ""):
 
 
 # ── Session State for User CSV File ──────────────────────────────────────────
-default_dataset_path = os.path.join(DATA_DIR, "CALL DETAILS-DATA.CSV")
-if not os.path.exists(default_dataset_path):
-    default_dataset_path = os.path.join(DATA_DIR, "uploaded_cdr.csv")
-
-has_default = os.path.exists(default_dataset_path)
-
 if "active_csv_path" not in st.session_state:
-    st.session_state.active_csv_path = default_dataset_path if has_default else None
+    st.session_state.active_csv_path = None
 if "active_file_name" not in st.session_state:
-    st.session_state.active_file_name = "CALL DETAILS-DATA.CSV" if has_default else None
+    st.session_state.active_file_name = None
 if "file_fingerprint" not in st.session_state:
-    st.session_state.file_fingerprint = f"default_{os.path.getsize(default_dataset_path)}" if has_default else ""
+    st.session_state.file_fingerprint = ""
 
 # ── Global Sidebar ─────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -421,65 +415,32 @@ if active_custom_path is None or not os.path.exists(active_custom_path):
             Upload Telecom CDR Dataset to Run Analytics
         </h2>
         <p style="color: #64748B; font-size: 1rem; max-width: 650px; margin: 0 auto 1.5rem auto; line-height: 1.6;">
-            Please provide your <b>Call Detail Records (CDR)</b> or <b>Customer Call Details CSV</b> file to run the platform.
-            The engine will dynamically adapt your dataset schema, partition the data with Dask, cluster subscriber profiles, and train distributed XGBoost fraud detection models.
+            Please upload your <b>Call Detail Records (CDR)</b> or <b>Customer Call Details CSV</b> file to run the platform.
+            The engine will dynamically adapt your dataset schema, cluster subscriber profiles, and train distributed XGBoost fraud detection models.
         </p>
     </div>
     """, unsafe_allow_html=True)
 
-    col1, col2 = st.columns([1, 1])
-
-    with col1:
-        st.markdown("#### 📂 Option 1: Drag & Drop CSV")
-        main_upload = st.file_uploader(
-            "Upload Telecom CDR / Call Details CSV",
-            type=["csv"],
-            key="main_page_csv_uploader"
-        )
-        if main_upload is not None:
-            try:
-                os.makedirs(DATA_DIR, exist_ok=True)
-                custom_csv_path = os.path.join(DATA_DIR, "uploaded_cdr.csv")
-            except Exception:
-                custom_csv_path = os.path.join(tempfile.gettempdir(), "uploaded_cdr.csv")
-            buffer = main_upload.getbuffer()
-            with open(custom_csv_path, "wb") as f:
-                f.write(buffer)
-            st.session_state.active_csv_path = custom_csv_path
-            st.session_state.active_file_name = main_upload.name
-            st.session_state.file_fingerprint = f"{main_upload.name}_{len(buffer)}"
-            st.success(f"Successfully loaded {main_upload.name}! Initializing pipeline...")
-            st.rerun()
-
-    with col2:
-        st.markdown("#### 🚀 Option 2: Instant Demo Mode")
-        st.markdown("""
-        <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:10px; padding:0.9rem; font-size:0.85rem; color:#166534; margin-bottom:0.8rem;">
-            Don't have a CDR CSV on hand right now? Click below to generate a <b>1,000-call synthetic telecom dataset</b> and test the live intelligence platform immediately!
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("⚡ Launch Demo with Sample Dataset", use_container_width=True, type="primary"):
-            from data_generator import generate_cdr
-            demo_df = generate_cdr(1000)
-            try:
-                os.makedirs(DATA_DIR, exist_ok=True)
-                demo_path = os.path.join(DATA_DIR, "demo_cdr.csv")
-            except Exception:
-                demo_path = os.path.join(tempfile.gettempdir(), "demo_cdr.csv")
-            demo_df.to_csv(demo_path, index=False)
-            st.session_state.active_csv_path = demo_path
-            st.session_state.active_file_name = "demo_cdr.csv (Live Simulation)"
-            st.session_state.file_fingerprint = f"demo_1000_{len(demo_df)}"
-            st.success("Sample dataset generated! Loading analytics...")
-            st.rerun()
-
-        if has_existing:
-            st.markdown("---")
-            if st.button("⚡ Continue with Previously Uploaded CSV", use_container_width=True):
-                st.session_state.active_csv_path = existing_uploaded
-                st.session_state.active_file_name = "uploaded_cdr.csv"
-                st.session_state.file_fingerprint = f"uploaded_cdr_{os.path.getsize(existing_uploaded)}"
-                st.rerun()
+    main_upload = st.file_uploader(
+        "Upload Telecom CDR / Call Details CSV",
+        type=["csv"],
+        key="main_page_csv_uploader",
+        help="Upload any real CDR dataset or customer call details CSV file"
+    )
+    if main_upload is not None:
+        try:
+            os.makedirs(DATA_DIR, exist_ok=True)
+            custom_csv_path = os.path.join(DATA_DIR, "uploaded_cdr.csv")
+        except Exception:
+            custom_csv_path = os.path.join(tempfile.gettempdir(), "uploaded_cdr.csv")
+        buffer = main_upload.getbuffer()
+        with open(custom_csv_path, "wb") as f:
+            f.write(buffer)
+        st.session_state.active_csv_path = custom_csv_path
+        st.session_state.active_file_name = main_upload.name
+        st.session_state.file_fingerprint = f"{main_upload.name}_{len(buffer)}"
+        st.success(f"Successfully loaded {main_upload.name}! Initializing pipeline...")
+        st.rerun()
 
     st.markdown("---")
     st.markdown("""
@@ -487,11 +448,11 @@ if active_custom_path is None or not os.path.exists(active_custom_path):
         <b>Accepted Formats & Schema Support:</b><br>
         • Supports any CDR or Customer Call Details CSV (Kaggle datasets, telecom operator logs, network dumps).<br>
         • Automatically maps caller phone numbers, call durations/minutes, call charges, and churn/fraud indicators.<br>
-        • Ingests standard telecom schema (MSISDN, timestamp, call type, cell towers, billing charges).
+        • <b>Zero Hardcoded Data:</b> The platform strictly waits for your CSV upload before running any pipeline.
     </div>
     """, unsafe_allow_html=True)
 
-    # Strictly halt execution here so no data is processed before user chooses
+    # Strictly halt execution here so no data is processed before user uploads
     st.stop()
 
 # ── Execute Full Pipeline on User CSV ──────────────────────────────────────────
