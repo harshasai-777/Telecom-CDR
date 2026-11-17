@@ -321,12 +321,18 @@ def load_and_process_pipeline(custom_path: str, file_fingerprint: str = ""):
 
 
 # ── Session State for User CSV File ──────────────────────────────────────────
+default_dataset_path = os.path.join(DATA_DIR, "CALL DETAILS-DATA.CSV")
+if not os.path.exists(default_dataset_path):
+    default_dataset_path = os.path.join(DATA_DIR, "uploaded_cdr.csv")
+
+has_default = os.path.exists(default_dataset_path)
+
 if "active_csv_path" not in st.session_state:
-    st.session_state.active_csv_path = None
+    st.session_state.active_csv_path = default_dataset_path if has_default else None
 if "active_file_name" not in st.session_state:
-    st.session_state.active_file_name = None
+    st.session_state.active_file_name = "CALL DETAILS-DATA.CSV" if has_default else None
 if "file_fingerprint" not in st.session_state:
-    st.session_state.file_fingerprint = ""
+    st.session_state.file_fingerprint = f"default_{os.path.getsize(default_dataset_path)}" if has_default else ""
 
 # ── Global Sidebar ─────────────────────────────────────────────────────────────
 with st.sidebar:
@@ -489,8 +495,8 @@ if active_custom_path is None or not os.path.exists(active_custom_path):
     st.stop()
 
 # ── Execute Full Pipeline on User CSV ──────────────────────────────────────────
-# Cloud safety: cap dataset to 50 000 rows to avoid CPU throttling on free tier
-_MAX_ROWS_CLOUD = 50_000
+# Cloud safety: cap dataset to 150 000 rows to avoid memory overflow on free tier
+_MAX_ROWS_CLOUD = 150_000
 
 def _maybe_downsample(path: str, max_rows: int = _MAX_ROWS_CLOUD):
     if not path or not os.path.exists(path):

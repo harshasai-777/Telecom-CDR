@@ -1,6 +1,7 @@
 # ── Generated / Default Data ───────────────────────────────────────────────────
 data/*
 !data/.gitkeep
+!data/CALL DETAILS-DATA.CSV
 models/*
 !models/.gitkeep
 reports/*
