@@ -42,19 +42,19 @@ PEAK_HOUR_END     = 18
 # ── Clustering ────────────────────────────────────────────────────────────────
 N_CLUSTERS        = 5    # K-Means number of clusters
 KMEANS_INIT       = "k-means++"
-KMEANS_N_INIT     = 10
-KMEANS_MAX_ITER   = 300
+KMEANS_N_INIT     = 3    # cloud-safe: was 10
+KMEANS_MAX_ITER   = 100  # cloud-safe: was 300
 
 # ── XGBoost (fraud classifier) ────────────────────────────────────────────────
 XGB_PARAMS = dict(
-    n_estimators     = 200,
-    max_depth        = 6,
+    n_estimators     = 80,   # cloud-safe: was 200
+    max_depth        = 4,    # cloud-safe: was 6
     learning_rate    = 0.1,
     subsample        = 0.8,
     colsample_bytree = 0.8,
     eval_metric      = "logloss",
     random_state     = RANDOM_SEED,
-    n_jobs           = -1,
+    n_jobs           = 1,    # cloud-safe: was -1 (no parallel overload)
 )
 TEST_SIZE   = 0.2
 SCALE_POS_WEIGHT = int((1 - FRAUD_FRACTION) / FRAUD_FRACTION)  # handle imbalance
@@ -64,7 +64,7 @@ ISOLATION_FOREST_CONTAMINATION = 0.05
 ANOMALY_RANDOM_STATE           = RANDOM_SEED
 
 # ── Dask ──────────────────────────────────────────────────────────────────────
-DASK_NPARTITIONS = 4   # number of Dask partitions (set to CPU count for speed)
+DASK_NPARTITIONS = 2   # cloud-safe: was 4 (reduces parallel overhead on free tier)
 
 # ── Streamlit ─────────────────────────────────────────────────────────────────
 PAGE_TITLE = "Telecom CDR Analytics Platform"

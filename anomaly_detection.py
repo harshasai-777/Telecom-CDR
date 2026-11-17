@@ -46,10 +46,10 @@ from clustering import CLUSTER_FEATURES
 def train_isolation_forest(X: np.ndarray) -> IsolationForest:
     print("  Fitting Isolation Forest ...")
     iso = IsolationForest(
-        n_estimators = 200,
+        n_estimators = 80,   # cloud-safe: was 200
         contamination= ISOLATION_FOREST_CONTAMINATION,
         random_state = ANOMALY_RANDOM_STATE,
-        n_jobs       = -1,
+        n_jobs       = 1,    # cloud-safe: was -1
     )
     iso.fit(X)
     return iso

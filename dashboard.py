@@ -479,9 +479,29 @@ if active_custom_path is None or not os.path.exists(active_custom_path):
     st.stop()
 
 # ── Execute Full Pipeline on User CSV ──────────────────────────────────────────
+# Cloud safety: cap dataset to 50 000 rows to avoid CPU throttling on free tier
+_MAX_ROWS_CLOUD = 50_000
+
+def _maybe_downsample(path: str, max_rows: int = _MAX_ROWS_CLOUD) -> str:
+    """If CSV has more than max_rows, sample it and write a trimmed version."""
+    try:
+        df = pd.read_csv(path, nrows=max_rows + 1)
+        if len(df) > max_rows:
+            df = df.sample(n=max_rows, random_state=42)
+            sampled_path = path.replace(".csv", "_sampled.csv")
+            df.to_csv(sampled_path, index=False)
+            return sampled_path, True
+        return path, False
+    except Exception:
+        return path, False
+
+_pipeline_path, _was_sampled = _maybe_downsample(active_custom_path)
+if _was_sampled:
+    st.info(f"⚡ Dataset was large — running on a 50 000-row sample to stay within Streamlit Cloud limits.", icon="ℹ️")
+
 with st.spinner(f"Executing Dask Preprocessing, Clustering & XGBoost Pipeline on {dataset_source_desc}..."):
     raw_df, sub_df, metrics, _ = load_and_process_pipeline(
-        custom_path=active_custom_path,
+        custom_path=_pipeline_path,
         file_fingerprint=st.session_state.file_fingerprint
     )
 

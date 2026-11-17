@@ -271,7 +271,7 @@ def cross_validate(
     scores = {}
     for metric in ("accuracy", "f1", "roc_auc"):
         try:
-            sc = cross_val_score(clf, X, y, cv=cv, scoring=metric, n_jobs=-1)
+            sc = cross_val_score(clf, X, y, cv=cv, scoring=metric, n_jobs=1)
             scores[metric] = {"mean": round(float(sc.mean()), 4), "std": round(float(sc.std()), 4)}
             print(f"  CV {metric:10s}: {sc.mean():.4f} Â± {sc.std():.4f}")
         except Exception:
