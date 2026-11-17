@@ -13,7 +13,6 @@ Key outputs
 Run standalone to see a quick summary:
     python preprocessing.py
 """
-from __future__ import annotations
 
 import os
 import sys
@@ -35,7 +34,7 @@ from config import (
 )
 
 
-# ── Intelligent Schema Normalizer for External CSVs ────────────────────────────
+# â”€â”€ Intelligent Schema Normalizer for External CSVs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def adapt_external_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -165,7 +164,7 @@ def adapt_external_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-# ── Loading ────────────────────────────────────────────────────────────────────
+# â”€â”€ Loading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def load_raw_dask(size: str = DEFAULT_SIZE, custom_path: str | None = None) -> dd.DataFrame:
     """
@@ -195,7 +194,7 @@ def load_raw_dask(size: str = DEFAULT_SIZE, custom_path: str | None = None) -> d
     return ddf
 
 
-# ── Cleaning ───────────────────────────────────────────────────────────────────
+# â”€â”€ Cleaning â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def clean_dask(ddf: dd.DataFrame) -> dd.DataFrame:
     """
@@ -212,7 +211,7 @@ def clean_dask(ddf: dd.DataFrame) -> dd.DataFrame:
     return ddf
 
 
-# ── Feature Engineering ────────────────────────────────────────────────────────
+# â”€â”€ Feature Engineering â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _add_temporal_features(ddf: dd.DataFrame) -> dd.DataFrame:
     """Add hour, day-of-week, night-time and peak-hour columns."""
@@ -240,7 +239,7 @@ def engineer_features_dask(ddf: dd.DataFrame) -> dd.DataFrame:
     return ddf
 
 
-# ── Per-subscriber Aggregation ─────────────────────────────────────────────────
+# â”€â”€ Per-subscriber Aggregation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def aggregate_per_subscriber(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -296,7 +295,7 @@ def aggregate_per_subscriber(df: pd.DataFrame) -> pd.DataFrame:
     return agg
 
 
-# ── Full pipeline ──────────────────────────────────────────────────────────────
+# â”€â”€ Full pipeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def run_pipeline(
     size: str = DEFAULT_SIZE,
@@ -339,7 +338,7 @@ def run_pipeline(
     return raw_df, sub_df
 
 
-# ── Standalone execution ───────────────────────────────────────────────────────
+# â”€â”€ Standalone execution â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if __name__ == "__main__":
     import argparse
 

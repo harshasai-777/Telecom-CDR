@@ -6,7 +6,7 @@ K-Means clustering of subscriber behaviour profiles.
 Steps
 -----
 1. Scale features with StandardScaler.
-2. Reduce dimensions with PCA (for visualisation only – not for clustering).
+2. Reduce dimensions with PCA (for visualisation only â€“ not for clustering).
 3. Determine optimal k using the Elbow method (WCSS) and Silhouette scores.
 4. Fit K-Means with the configured k.
 5. Attach cluster labels and dynamic behavioural names to subscribers.
@@ -15,7 +15,6 @@ Steps
 Usage:
     python clustering.py --size small
 """
-from __future__ import annotations
 
 import os
 import sys
@@ -43,7 +42,7 @@ from config import (
 )
 
 
-# ── Feature columns used for clustering ───────────────────────────────────────
+# â”€â”€ Feature columns used for clustering â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 CLUSTER_FEATURES = [
     "total_calls",
     "total_duration_min",
@@ -67,7 +66,7 @@ CLUSTER_FEATURES = [
 ]
 
 
-# ── Helpers ────────────────────────────────────────────────────────────────────
+# â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _prepare_features(sub_df: pd.DataFrame) -> tuple[np.ndarray, StandardScaler]:
     X = sub_df[CLUSTER_FEATURES].values
@@ -81,7 +80,7 @@ def _reduce_pca(X_scaled: np.ndarray, n_components: int = 2) -> np.ndarray:
     return pca.fit_transform(X_scaled), pca
 
 
-# ── Elbow / Silhouette analysis ────────────────────────────────────────────────
+# â”€â”€ Elbow / Silhouette analysis â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def elbow_analysis(
     X_scaled: np.ndarray,
@@ -131,7 +130,7 @@ def elbow_analysis(
     return results
 
 
-# ── Cluster fitting ────────────────────────────────────────────────────────────
+# â”€â”€ Cluster fitting â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def fit_kmeans(X_scaled: np.ndarray, n_clusters: int = N_CLUSTERS) -> KMeans:
     print(f"  Fitting K-Means (k={n_clusters}) ...")
@@ -163,7 +162,7 @@ def label_subscribers(
     return sub_df, pca
 
 
-# ── Dynamic Cluster profiling ─────────────────────────────────────────────────
+# â”€â”€ Dynamic Cluster profiling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def assign_cluster_names(profile: pd.DataFrame) -> dict[int, str]:
     """
@@ -230,7 +229,7 @@ def profile_clusters(sub_df: pd.DataFrame) -> pd.DataFrame:
     return profile
 
 
-# ── Saving artefacts ───────────────────────────────────────────────────────────
+# â”€â”€ Saving artefacts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def save_artefacts(km: KMeans, scaler: StandardScaler, pca: PCA, cluster_names: dict | None = None) -> None:
     with open(os.path.join(MODEL_DIR, "kmeans.pkl"),  "wb") as f: pickle.dump(km,     f)
@@ -242,7 +241,7 @@ def save_artefacts(km: KMeans, scaler: StandardScaler, pca: PCA, cluster_names: 
     print(f"  Artefacts saved to {MODEL_DIR}")
 
 
-# ── Full clustering pipeline ───────────────────────────────────────────────────
+# â”€â”€ Full clustering pipeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def run_clustering(
     sub_df: pd.DataFrame,
@@ -275,7 +274,7 @@ def run_clustering(
     return sub_df, km, scaler, pca, elbow_results
 
 
-# ── Standalone execution ───────────────────────────────────────────────────────
+# â”€â”€ Standalone execution â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if __name__ == "__main__":
     import argparse
     from preprocessing import run_pipeline

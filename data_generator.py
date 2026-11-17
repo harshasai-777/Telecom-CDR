@@ -29,7 +29,6 @@ Each record represents one phone call with the following fields:
 """
 
 import argparse
-from __future__ import annotations
 import os
 import random
 import sys
@@ -57,7 +56,7 @@ rng  = np.random.default_rng(RANDOM_SEED)
 random.seed(RANDOM_SEED)
 
 
-# ── Helpers ────────────────────────────────────────────────────────────────────
+# â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _make_msisdn(n: int) -> list[str]:
     """Generate n anonymised MSISDN strings like '+91-XXXXXXXXXX'."""
@@ -75,7 +74,7 @@ def _make_towers(n: int) -> pd.DataFrame:
 
 def _call_duration(is_fraud: bool) -> int:
     """
-    Normal subscribers: exponential distribution (mean ≈ 180 s).
+    Normal subscribers: exponential distribution (mean â‰ˆ 180 s).
     Fraud subscribers:  mix of very short (probing) and very long calls.
     """
     if is_fraud:
@@ -103,10 +102,10 @@ def _charge(duration_sec: int, call_type: str, is_international: bool, is_roamin
         return round(rate * (duration_sec / 10), 4)
 
 
-# ── Main generator ─────────────────────────────────────────────────────────────
+# â”€â”€ Main generator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def generate_cdr(n_records: int) -> pd.DataFrame:
-    print(f"  Generating {n_records:,} CDR records …")
+    print(f"  Generating {n_records:,} CDR records â€¦")
 
     # Subscriber pool
     subscribers = _make_msisdn(NUM_SUBSCRIBERS)
@@ -176,7 +175,7 @@ def generate_cdr(n_records: int) -> pd.DataFrame:
     return df
 
 
-# ── Save helpers ───────────────────────────────────────────────────────────────
+# â”€â”€ Save helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def save_dataset(df: pd.DataFrame, name: str, fmt: str = "csv") -> str:
     fname = os.path.join(DATA_DIR, f"cdr_{name}.{fmt}")
@@ -189,7 +188,7 @@ def save_dataset(df: pd.DataFrame, name: str, fmt: str = "csv") -> str:
     return fname
 
 
-# ── CLI entry point ────────────────────────────────────────────────────────────
+# â”€â”€ CLI entry point â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def main():
     parser = argparse.ArgumentParser(description="Generate synthetic Telecom CDR data.")

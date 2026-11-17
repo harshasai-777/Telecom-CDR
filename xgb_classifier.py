@@ -20,7 +20,6 @@ Pipeline
 Usage:
     python xgb_classifier.py --size small
 """
-from __future__ import annotations
 
 import os
 import sys
@@ -60,7 +59,7 @@ from config import (
 from clustering import CLUSTER_FEATURES
 
 
-# ── Feature & Label Preparation ────────────────────────────────────────────────
+# â”€â”€ Feature & Label Preparation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def get_feature_list(sub_df: pd.DataFrame) -> list[str]:
     """
@@ -99,7 +98,7 @@ def prepare_xy(sub_df: pd.DataFrame) -> tuple[np.ndarray, np.ndarray, list[str]]
     return X, y, features
 
 
-# ── Train / Evaluate ───────────────────────────────────────────────────────────
+# â”€â”€ Train / Evaluate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def train_xgb(
     X_train: np.ndarray,
@@ -210,7 +209,7 @@ def evaluate(
         ax.plot([0, 1], [0, 1], "r--", linewidth=1)
         ax.set_xlabel("False Positive Rate")
         ax.set_ylabel("True Positive Rate")
-        ax.set_title("ROC Curve — XGBoost Fraud Classifier")
+        ax.set_title("ROC Curve â€” XGBoost Fraud Classifier")
         ax.legend(loc="lower right")
         ax.grid(True, alpha=0.3)
         plt.tight_layout()
@@ -274,14 +273,14 @@ def cross_validate(
         try:
             sc = cross_val_score(clf, X, y, cv=cv, scoring=metric, n_jobs=-1)
             scores[metric] = {"mean": round(float(sc.mean()), 4), "std": round(float(sc.std()), 4)}
-            print(f"  CV {metric:10s}: {sc.mean():.4f} ± {sc.std():.4f}")
+            print(f"  CV {metric:10s}: {sc.mean():.4f} Â± {sc.std():.4f}")
         except Exception:
             scores[metric] = {"mean": 1.0, "std": 0.0}
 
     return scores
 
 
-# ── Save Model ─────────────────────────────────────────────────────────────────
+# â”€â”€ Save Model â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def save_model(clf: XGBClassifier, scaler: StandardScaler | None = None, features: list[str] | None = None) -> None:
     with open(os.path.join(MODEL_DIR, "xgb_fraud.pkl"), "wb") as f:
@@ -295,7 +294,7 @@ def save_model(clf: XGBClassifier, scaler: StandardScaler | None = None, feature
     print(f"  Model saved to {MODEL_DIR}")
 
 
-# ── Full Pipeline ──────────────────────────────────────────────────────────────
+# â”€â”€ Full Pipeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def run_xgb_pipeline(
     sub_df: pd.DataFrame,
@@ -321,7 +320,7 @@ def run_xgb_pipeline(
         stratify     = y if can_stratify else None,
     )
     print(f"  Train: {len(y_train)} | Test: {len(y_test)}")
-    print(f"  Fraud rate — Train: {y_train.mean():.1%} | Test: {y_test.mean():.1%}")
+    print(f"  Fraud rate â€” Train: {y_train.mean():.1%} | Test: {y_test.mean():.1%}")
 
     print("\nTraining XGBoostClassifier (Distributed-ready hist algorithm) ...")
     clf = train_xgb(X_train, y_train)
@@ -351,7 +350,7 @@ def run_xgb_pipeline(
     return clf, metrics
 
 
-# ── Standalone ─────────────────────────────────────────────────────────────────
+# â”€â”€ Standalone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if __name__ == "__main__":
     import argparse
     from preprocessing import run_pipeline

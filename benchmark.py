@@ -18,7 +18,6 @@ Usage:
     python benchmark.py
 """
 
-from __future__ import annotations
 import os
 import sys
 import time
@@ -30,9 +29,6 @@ import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from config import DATASET_SIZES, REPORT_DIR
-from data_generator import generate_cdr, save_dataset
-from preprocessing import run_pipeline
-from clustering import run_clustering
 
 
 def _time_block(label: str, fn, *args, **kwargs):
@@ -56,8 +52,11 @@ def run_benchmark(sizes: list[str] | None = None) -> pd.DataFrame:
         print(f"  Benchmarking: {size.upper()} ({n:,} records)")
         print(f"{'='*50}")
 
-        # ── Generate data if needed ─────────────────────────────────────────
+        # â”€â”€ Generate data if needed â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         from config import DATA_DIR
+        from data_generator import generate_cdr, save_dataset
+        from preprocessing import run_pipeline
+        from clustering import run_clustering
         path = os.path.join(DATA_DIR, f"cdr_{size}.csv")
         if not os.path.exists(path):
             print("  Generating dataset ...")
@@ -66,7 +65,7 @@ def run_benchmark(sizes: list[str] | None = None) -> pd.DataFrame:
 
         row = {"size": size, "n_records": n}
 
-        # ── Preprocessing (Dask + feature engineering + aggregation) ────────
+        # â”€â”€ Preprocessing (Dask + feature engineering + aggregation) â”€â”€â”€â”€â”€â”€â”€â”€
         (raw_df, sub_df), t_pre = _time_block(
             "Preprocessing (Dask->Pandas + feature engineering)",
             run_pipeline, size, False
@@ -74,14 +73,14 @@ def run_benchmark(sizes: list[str] | None = None) -> pd.DataFrame:
         row["t_preprocess_s"] = round(t_pre, 3)
         row["n_subscribers"]  = len(sub_df)
 
-        # ── K-Means clustering ───────────────────────────────────────────────
+        # â”€â”€ K-Means clustering â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         (sub_labelled, *_), t_km = _time_block(
             "K-Means clustering",
             run_clustering, sub_df, 5, False
         )
         row["t_kmeans_s"] = round(t_km, 3)
 
-        # ── XGBoost training ─────────────────────────────────────────────────
+        # â”€â”€ XGBoost training â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         from xgb_classifier import run_xgb_pipeline
         (_, metrics), t_xgb = _time_block(
             "XGBoost training + evaluation",
@@ -101,7 +100,7 @@ def run_benchmark(sizes: list[str] | None = None) -> pd.DataFrame:
     print(f"\nBenchmark results saved -> {path}")
     print(bench_df.to_string(index=False))
 
-    # ── Plot ─────────────────────────────────────────────────────────────────
+    # â”€â”€ Plot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     _plot_benchmark(bench_df)
 
     return bench_df

@@ -17,7 +17,6 @@ Outputs
 Usage:
     python anomaly_detection.py --size small
 """
-from __future__ import annotations
 
 import os
 import sys
@@ -42,7 +41,7 @@ from config import (
 from clustering import CLUSTER_FEATURES
 
 
-# ── Train Isolation Forest ─────────────────────────────────────────────────────
+# â”€â”€ Train Isolation Forest â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def train_isolation_forest(X: np.ndarray) -> IsolationForest:
     print("  Fitting Isolation Forest ...")
@@ -56,7 +55,7 @@ def train_isolation_forest(X: np.ndarray) -> IsolationForest:
     return iso
 
 
-# ── Score and flag anomalies ───────────────────────────────────────────────────
+# â”€â”€ Score and flag anomalies â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def score_subscribers(
     iso: IsolationForest,
@@ -73,11 +72,11 @@ def score_subscribers(
     return sub_df
 
 
-# ── Evaluation (if ground-truth labels exist) ──────────────────────────────────
+# â”€â”€ Evaluation (if ground-truth labels exist) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def evaluate_anomaly(sub_df: pd.DataFrame) -> dict | None:
     if "is_fraud" not in sub_df.columns:
-        print("  No ground-truth labels available — skipping evaluation.")
+        print("  No ground-truth labels available â€” skipping evaluation.")
         return None
 
     y_true = sub_df["is_fraud"].values
@@ -111,12 +110,12 @@ def evaluate_anomaly(sub_df: pd.DataFrame) -> dict | None:
     return {"auc": auc}
 
 
-# ── Visualisation ──────────────────────────────────────────────────────────────
+# â”€â”€ Visualisation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def plot_anomalies(sub_df: pd.DataFrame) -> None:
     """Scatter plot of PCA-reduced space with anomalies highlighted."""
     if "pca_x" not in sub_df.columns or "pca_y" not in sub_df.columns:
-        print("  PCA columns not found — run clustering first.")
+        print("  PCA columns not found â€” run clustering first.")
         return
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
@@ -127,7 +126,7 @@ def plot_anomalies(sub_df: pd.DataFrame) -> None:
         sub_df["pca_x"], sub_df["pca_y"],
         c=colors, alpha=0.6, s=30, edgecolors="none",
     )
-    axes[0].set_title("Anomaly Detection — PCA Space")
+    axes[0].set_title("Anomaly Detection â€” PCA Space")
     axes[0].set_xlabel("PC1")
     axes[0].set_ylabel("PC2")
     from matplotlib.patches import Patch
@@ -154,7 +153,7 @@ def plot_anomalies(sub_df: pd.DataFrame) -> None:
     print(f"  Plot saved -> {path}")
 
 
-# ── Save ───────────────────────────────────────────────────────────────────────
+# â”€â”€ Save â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def save_model(iso: IsolationForest) -> None:
     with open(os.path.join(MODEL_DIR, "isolation_forest.pkl"), "wb") as f:
@@ -162,7 +161,7 @@ def save_model(iso: IsolationForest) -> None:
     print(f"  Model saved to {MODEL_DIR}")
 
 
-# ── Full pipeline ──────────────────────────────────────────────────────────────
+# â”€â”€ Full pipeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def run_anomaly_pipeline(sub_df: pd.DataFrame) -> pd.DataFrame:
     t0 = time.perf_counter()
@@ -183,7 +182,7 @@ def run_anomaly_pipeline(sub_df: pd.DataFrame) -> pd.DataFrame:
     return sub_df
 
 
-# ── Standalone ─────────────────────────────────────────────────────────────────
+# â”€â”€ Standalone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if __name__ == "__main__":
     import argparse
     from preprocessing import run_pipeline
