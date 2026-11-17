@@ -57,8 +57,6 @@ def run_benchmark(sizes: list[str] | None = None) -> pd.DataFrame:
         print(f"{'='*50}")
 
         # ── Generate data if needed ─────────────────────────────────────────
-        from __future__ import annotations
-import os
         from config import DATA_DIR
         path = os.path.join(DATA_DIR, f"cdr_{size}.csv")
         if not os.path.exists(path):
